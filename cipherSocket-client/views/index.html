@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link rel="stylesheet" href="style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+
+</head>
+<body >
+<div id="large-header" class="large-header">
+    <canvas id="demo-canvas"></canvas>
+</div>
+<script src='https://tympanus.net/Development/AnimatedHeaderBackgrounds/js/TweenLite.min.js'></script>
+<script src='https://tympanus.net/Development/AnimatedHeaderBackgrounds/js/EasePack.min.js'></script>
+<script src='https://tympanus.net/Development/AnimatedHeaderBackgrounds/js/rAF.js'></script>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+            <div class="panel panel-login">
+                <div class="panel-heading">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <a href="#" class="active" id="login-form-link">Login</a>
+                        </div>
+                        <div class="col-xs-6">
+                            <a href="#" id="register-form-link">Register</a>
+                        </div>
+                    </div>
+                    <hr>
+                </div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form id="login-form" action="/login" method="post" role="form" style="display: block;">
+                                <div class="form-group">
+                                    <input type="text" name="username" id="username-login" tabindex="1"
+                                           class="form-control"
+                                           placeholder="Username" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="password" id="password-login" tabindex="2"
+                                           class="form-control" placeholder="Password">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" name="message" id="message" tabindex="3"
+                                           class="form-control" placeholder="Message">
+                                </div>
+                                <!--<div class="form-group">-->
+                                    <!--<input type="text" name="answer" id="answer"-->
+                                           <!--class="form-control" placeholder="Answer">-->
+                                <!--</div>-->
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="submit" name="login-submit" id="login-submit" tabindex="4"
+                                                   class="form-control btn btn-login" value="Log In" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                            <form id="register-form" action="/register" method="post" role="form" style="display: none;">
+                                <div class="form-group">
+                                    <input type="text" name="username" id="username-register" tabindex="1"
+                                           class="form-control"
+                                           placeholder="Username" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input type="email" name="email" id="email" tabindex="2" class="form-control"
+                                           placeholder="Email Address" value="">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="password" id="password-register" tabindex="3"
+                                           class="form-control" placeholder="Password">
+                                </div>
+                                <div class="form-group">
+                                    <input type="password" name="confirm-password" id="confirm-password" tabindex="4"
+                                           class="form-control" placeholder="Confirm Password">
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="submit" name="register-submit" id="register-submit"
+                                                   tabindex="5" class="form-control btn btn-register"
+                                                   value="Register Now" >
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                            <label for="login-withoutPass">Authentication Without Pass</label>
+                            <form id="login-withoutPass" action="/auth" method="post" role="form"
+                                  style="display: block;">
+                                <div class="form-group">
+                                    <input type="text" name="username" id="username" tabindex="6"
+                                           class="form-control"
+                                           placeholder="Username" value="">
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-sm-6 col-sm-offset-3">
+                                            <input type="submit" name="login-submit" id="submit" tabindex="4"
+                                                   class="form-control btn btn-login" value="Log-In">
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+
+        $('#login-form-link').click(function (e) {
+            $("#login-form").delay(100).fadeIn(100);
+            $("#register-form").fadeOut(100);
+            $('#register-form-link').removeClass('active');
+            $(this).addClass('active');
+            e.preventDefault();
+        });
+        $('#register-form-link').click(function (e) {
+            $("#register-form").delay(100).fadeIn(100);
+            $("#login-form").fadeOut(100);
+            $('#login-form-link').removeClass('active');
+            $(this).addClass('active');
+            e.preventDefault();
+        });
+
+    });
+</script>
+
+<!--for graph-->
+<script>
+    (function () {
+
+        var width, height, largeHeader, canvas, ctx, points, target, animateHeader = true;
+
+        // Main
+        initHeader();
+        initAnimation();
+        addListeners();
+
+        function initHeader() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            target = {x: width / 2, y: height / 2};
+
+            largeHeader = document.getElementById('large-header');
+            largeHeader.style.height = height + 'px';
+
+            canvas = document.getElementById('demo-canvas');
+            canvas.width = width;
+            canvas.height = height;
+            ctx = canvas.getContext('2d');
+
+            // create points
+            points = [];
+            for (var x = 0; x < width; x = x + width / 20) {
+                for (var y = 0; y < height; y = y + height / 20) {
+                    var px = x + Math.random() * width / 20;
+                    var py = y + Math.random() * height / 20;
+                    var p = {x: px, originX: px, y: py, originY: py};
+                    points.push(p);
+                }
+            }
+
+            // for each point find the 5 closest points
+            for (var i = 0; i < points.length; i++) {
+                var closest = [];
+                var p1 = points[i];
+                for (var j = 0; j < points.length; j++) {
+                    var p2 = points[j]
+                    if (!(p1 == p2)) {
+                        var placed = false;
+                        for (var k = 0; k < 5; k++) {
+                            if (!placed) {
+                                if (closest[k] == undefined) {
+                                    closest[k] = p2;
+                                    placed = true;
+                                }
+                            }
+                        }
+
+                        for (var k = 0; k < 5; k++) {
+                            if (!placed) {
+                                if (getDistance(p1, p2) < getDistance(p1, closest[k])) {
+                                    closest[k] = p2;
+                                    placed = true;
+                                }
+                            }
+                        }
+                    }
+                }
+                p1.closest = closest;
+            }
+
+            // assign a circle to each point
+            for (var i in points) {
+                var c = new Circle(points[i], 2 + Math.random() * 2, 'rgba(255,255,255,0.3)');
+                points[i].circle = c;
+            }
+        }
+
+        // Event handling
+        function addListeners() {
+            if (!('ontouchstart' in window)) {
+                window.addEventListener('mousemove', mouseMove);
+            }
+            window.addEventListener('scroll', scrollCheck);
+            window.addEventListener('resize', resize);
+        }
+
+        function mouseMove(e) {
+            var posx = posy = 0;
+            if (e.pageX || e.pageY) {
+                posx = e.pageX;
+                posy = e.pageY;
+            }
+            else if (e.clientX || e.clientY) {
+                posx = e.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+                posy = e.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+            }
+            target.x = posx;
+            target.y = posy;
+        }
+
+        function scrollCheck() {
+            if (document.body.scrollTop > height) animateHeader = false;
+            else animateHeader = true;
+        }
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            largeHeader.style.height = height + 'px';
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        // animation
+        function initAnimation() {
+            animate();
+            for (var i in points) {
+                shiftPoint(points[i]);
+            }
+        }
+
+        function animate() {
+            if (animateHeader) {
+                ctx.clearRect(0, 0, width, height);
+                for (var i in points) {
+                    // detect points in range
+                    if (Math.abs(getDistance(target, points[i])) < 4000) {
+                        points[i].active = 0.3;
+                        points[i].circle.active = 0.6;
+                    } else if (Math.abs(getDistance(target, points[i])) < 20000) {
+                        points[i].active = 0.1;
+                        points[i].circle.active = 0.3;
+                    } else if (Math.abs(getDistance(target, points[i])) < 40000) {
+                        points[i].active = 0.02;
+                        points[i].circle.active = 0.1;
+                    } else {
+                        points[i].active = 0;
+                        points[i].circle.active = 0;
+                    }
+
+                    drawLines(points[i]);
+                    points[i].circle.draw();
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        function shiftPoint(p) {
+            TweenLite.to(p, 1 + 1 * Math.random(), {
+                x: p.originX - 50 + Math.random() * 100,
+                y: p.originY - 50 + Math.random() * 100, ease: Circ.easeInOut,
+                onComplete: function () {
+                    shiftPoint(p);
+                }
+            });
+        }
+
+        // Canvas manipulation
+        function drawLines(p) {
+            if (!p.active) return;
+            for (var i in p.closest) {
+                ctx.beginPath();
+                ctx.moveTo(p.x, p.y);
+                ctx.lineTo(p.closest[i].x, p.closest[i].y);
+                ctx.strokeStyle = 'rgba(156,217,249,' + p.active + ')';
+                ctx.stroke();
+            }
+        }
+
+        function Circle(pos, rad, color) {
+            var _this = this;
+
+            // constructor
+            (function () {
+                _this.pos = pos || null;
+                _this.radius = rad || null;
+                _this.color = color || null;
+            })();
+
+            this.draw = function () {
+                if (!_this.active) return;
+                ctx.beginPath();
+                ctx.arc(_this.pos.x, _this.pos.y, _this.radius, 0, 2 * Math.PI, false);
+                ctx.fillStyle = 'rgba(156,217,249,' + _this.active + ')';
+                ctx.fill();
+            };
+        }
+
+        // Util
+        function getDistance(p1, p2) {
+            return Math.pow(p1.x - p2.x, 2) + Math.pow(p1.y - p2.y, 2);
+        }
+
+    })();
+</script>
+
+</body>
+</html>
+
